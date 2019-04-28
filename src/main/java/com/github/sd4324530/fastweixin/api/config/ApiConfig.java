@@ -1,5 +1,13 @@
 package com.github.sd4324530.fastweixin.api.config;
 
+import java.io.Serializable;
+import java.util.Observable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.sd4324530.fastweixin.api.response.GetJsApiTicketResponse;
 import com.github.sd4324530.fastweixin.api.response.GetTokenResponse;
 import com.github.sd4324530.fastweixin.exception.WeixinException;
@@ -7,13 +15,6 @@ import com.github.sd4324530.fastweixin.handle.ApiConfigChangeHandle;
 import com.github.sd4324530.fastweixin.util.JSONUtil;
 import com.github.sd4324530.fastweixin.util.NetWorkCenter;
 import com.github.sd4324530.fastweixin.util.StrUtil;
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.util.Observable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * API配置类，项目中请保证其为单例
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author peiyu
  * @since 1.2
  */
-public final class ApiConfig extends Observable implements Serializable {
+public class ApiConfig extends Observable implements Serializable {
 
     private static final Logger        LOG             = LoggerFactory.getLogger(ApiConfig.class);
     /**
@@ -160,7 +161,7 @@ public final class ApiConfig extends Observable implements Serializable {
      *
      * @param refreshTime 刷新时间
      */
-    private void initToken(final long refreshTime) {
+    protected void initToken(final long refreshTime) {
         LOG.debug("开始初始化access_token........");
         //记住原本的时间，用于出错回滚
         final long oldTime = this.weixinTokenStartTime;
@@ -193,7 +194,7 @@ public final class ApiConfig extends Observable implements Serializable {
      *
      * @param refreshTime 刷新时间
      */
-    private void initJSToken(final long refreshTime) {
+    protected void initJSToken(final long refreshTime) {
         LOG.debug("初始化 jsapi_ticket........");
         //记住原本的时间，用于出错回滚
         final long oldTime = this.jsTokenStartTime;

@@ -187,3 +187,32 @@ Maven 项目引入
     <version>1.3.15</version>
 </dependency>
 ```
+---
+# 多节点共享`ApiConfig`
+## 引入依赖包
+```xml
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>2.7.2</version>
+</dependency>
+
+<dependency>
+    <groupId>com.github.jedis-lock</groupId>
+    <artifactId>jedis-lock</artifactId>
+    <version>1.0.0</version>
+    <type>jar</type>
+</dependency>
+```
+
+## 使用`SharedApiConfig`
+```xml
+<bean id="apiConfig" class="com.github.sd4324530.fastweixin.api.config.SharedApiConfig">
+	<constructor-arg index="0" value="${appid}"/>
+	<constructor-arg index="1" value="${appsecret}"/>
+	<constructor-arg index="2" value="${mpId}"/>
+	<constructor-arg index="3" ref="jedisPool"/>
+</bean>
+```
+* `SharedApiConfig`继承自`ApiConfig`
+* 与构造普通的`ApiConfig`不同，构造`SharedApiConfig`需要额外传入两个参数，`mpId`和`jedisPool`。`mpId`唯一标识一个公众号；`jedisPool`是redis的连接池对象，`SharedApiConfig`通过该对象将`accessToken`和`jsApiTicket`存入redis。
