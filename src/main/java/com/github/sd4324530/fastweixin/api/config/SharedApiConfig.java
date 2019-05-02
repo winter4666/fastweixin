@@ -60,19 +60,23 @@ public final class SharedApiConfig extends ApiConfig {
 	
 	private void distributedSync(final LockCallback lockCallback) {
     	Jedis jedis = jedisPool.getResource();
-		JedisLock lock = new JedisLock(jedis, getKey("sync"),10 * 1000);
-		boolean lockSuccess = false;
-		try {
-			lockSuccess = lock.acquire();
-			if(lockSuccess) {
-				lockCallback.doWithLock();
+    	try {
+			JedisLock lock = new JedisLock(jedis, getKey("sync"),10 * 1000);
+			boolean lockSuccess = false;
+			try {
+				lockSuccess = lock.acquire();
+				if(lockSuccess) {
+					lockCallback.doWithLock();
+				}
+			} catch (InterruptedException e) {
+				LOG.error(e.getMessage(), e);
+			} finally {
+				if(lockSuccess) {
+					lock.release();
+				}
 			}
-		} catch (InterruptedException e) {
-			LOG.error(e.getMessage(), e);
-		} finally {
-			if(lockSuccess) {
-				lock.release();
-			}
+    	} finally {
+			jedis.close();
 		}
 	}
 	
