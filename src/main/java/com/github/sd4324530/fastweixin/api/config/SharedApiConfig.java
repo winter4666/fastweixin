@@ -58,10 +58,10 @@ public final class SharedApiConfig extends ApiConfig {
 		}
 	}
 	
-	private void distributedSync(final LockCallback lockCallback) {
+	private void distributedSync(String key, final LockCallback lockCallback) {
     	Jedis jedis = jedisPool.getResource();
     	try {
-			JedisLock lock = new JedisLock(jedis, getKey("sync"),10 * 1000);
+			JedisLock lock = new JedisLock(jedis, getKey(key),10 * 1000);
 			boolean lockSuccess = false;
 			try {
 				lockSuccess = lock.acquire();
@@ -135,7 +135,7 @@ public final class SharedApiConfig extends ApiConfig {
     		return;
     	}
     	LOG.debug("开始初始化access_token........");
-		distributedSync(new LockCallback() {
+		distributedSync("initToken", new LockCallback() {
 			@Override
 			public void doWithLock() {
 				if(getValueFromRedis(ACCESS_TOKEN) != null) {
@@ -170,7 +170,7 @@ public final class SharedApiConfig extends ApiConfig {
     		return;
     	}
         LOG.debug("初始化 jsapi_ticket........");
-		distributedSync(new LockCallback() {
+		distributedSync("initJSToken", new LockCallback() {
 			@Override
 			public void doWithLock() {
 				if(getValueFromRedis(JS_API_TICKET) != null) {
